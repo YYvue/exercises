@@ -10,13 +10,46 @@ const defaultParserResult = {
   hash: ''
 }
 
+// const parserUrl = (url) => {
+//   // 你的实现
+//   return defaultParserResult;
+// };
+
 const parserUrl = (url) => {
-  // 你的实现
-  return defaultParserResult;
+  const defaultParserResult = {
+    protocol: '',
+    hostname: '',
+    port: '',
+    pathname: '',
+    params: {},
+    hash: ''
+  };
+
+  const parserResult = { ...defaultParserResult }; // 创建一个副本以避免直接修改默认值
+
+  try {
+    const urlObj = new URL(url);
+
+    parserResult.protocol = urlObj.protocol;
+    parserResult.hostname = urlObj.hostname;
+    parserResult.port = urlObj.port;
+    parserResult.pathname = urlObj.pathname;
+
+    // 解析查询参数
+    urlObj.searchParams.forEach((value, key) => {
+      parserResult.params[key] = value;
+    });
+
+    parserResult.hash = urlObj.hash;
+  } catch (error) {
+    console.error('URL解析出错:', error);
+  }
+
+  return parserResult;
 };
 
 // 测试用例
-parserUrl('https://baidu.com:443/s?wd=hello');
+// parserUrl('https://baidu.com:443/s?wd=hello');
 // 输出结果：{ protocol: 'https:', hostname: 'baidu.com', port: '443', pathname: '/s', params: { wd: 'hello' },  hash: '' }
 
 
@@ -32,6 +65,13 @@ function App() {
     }
     document.addEventListener('keydown', onKeyDown, false);
   }, []);
+  const handleParseUrl = () => {
+    const inputEl = document.querySelector('input[type="text"]');
+    const url = inputEl.value;
+
+    // 调用 parserUrl 方法并更新解析结果
+    setResult(parserUrl(url));
+  };
 
   return (
     <div className="App">
@@ -42,7 +82,7 @@ function App() {
       </header>
       <section className="App-content">
         <input type="text" placeholder="请输入 url 字符串" />
-        <button id="J-parserBtn">解析</button>
+        <button id="J-parserBtn" onClick={handleParseUrl}>解析</button>
       </section>
       <section className="App-result">
         <h2>解析结果</h2>
